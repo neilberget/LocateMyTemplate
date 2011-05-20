@@ -2,7 +2,25 @@
   var LocateMyTemplate;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   LocateMyTemplate = function() {
-    var applyData;
+    var applyData, elementsFrom;
+    elementsFrom = function(text, excludeScripts) {
+      var container, match, tag;
+      if (excludeScripts || excludeScripts === null) {
+        text = text.stripScripts();
+      }
+      match = text.match(/^\s*<(t[dhr]|tbody|tfoot|thead)/i);
+      if (match) {
+        container = new Element('table');
+        tag = match[1].toLowerCase();
+        if (['td', 'th', 'tr'].contains(tag)) {
+          container = new Element('tbody').inject(container);
+          if (tag !== 'tr') {
+            container = new Element('tr').inject(container);
+          }
+        }
+      }
+      return (container || new Element("div")).set('html', text).getChildren();
+    };
     applyData = function(s, d) {
       var k, v;
       for (k in d) {
@@ -21,10 +39,10 @@
       return this[name] = function(data) {
         var json;
         if (type === "html") {
-          return Elements.from(applyData(t, data));
+          return elementsFrom(applyData(t, data));
         } else {
           json = Haml.parse.call(data, t);
-          return Elements.from(Haml.to_html(json));
+          return elementsFrom(Haml.to_html(json));
         }
       };
     };

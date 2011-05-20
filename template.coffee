@@ -25,6 +25,25 @@
 #     });
 #
 LocateMyTemplate = ->
+  # Copied from Elements.from since we don't want to depend on mootools-more.
+  # Converts a string into mootools Element(s)
+  elementsFrom = (text, excludeScripts) ->
+    if excludeScripts or excludeScripts == null
+      text = text.stripScripts()
+      
+    match = text.match /^\s*<(t[dhr]|tbody|tfoot|thead)/i
+    
+    if match
+      container = new Element 'table'
+      tag = match[1].toLowerCase()
+      if (['td', 'th', 'tr'].contains tag)
+        container = new Element('tbody').inject container
+        if tag != 'tr'
+          container = new Element('tr').inject container
+          
+      
+    (container || new Element "div").set('html', text).getChildren()
+      
   # Simple regex to replace all {key} with the data
   # passed. Only used in text/html templates
   applyData = (s, d) ->
@@ -46,10 +65,10 @@ LocateMyTemplate = ->
     # templates. Returns a Mootools Elements object.
     @[name] = (data) ->
       if type == "html"
-        Elements.from applyData t, data
+        elementsFrom applyData t, data
       else
         json = Haml.parse.call data, t
-        Elements.from Haml.to_html json
+        elementsFrom Haml.to_html json
     
   # Finds all the script tags with type "text/html" or "text/haml"
   # and passes the id and inner html to addTemplate
