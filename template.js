@@ -21,13 +21,13 @@
       }
       return (container || new Element("div")).set('html', text).getChildren();
     };
-    applyData = function(s, d) {
-      var k, v;
-      for (k in d) {
-        v = d[k];
-        s = s.replace(new RegExp('{' + k + '}', 'g'), d[k]);
+    applyData = function(string, data) {
+      var key, value;
+      for (key in data) {
+        value = data[key];
+        string = string.replace(new RegExp('{\s*' + key + '\s*}', 'g'), data[key]);
       }
-      return s;
+      return string;
     };
     this.addTemplate = function(name, t, type) {
       if (type == null) {

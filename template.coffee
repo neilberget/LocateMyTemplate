@@ -46,18 +46,17 @@ LocateMyTemplate = ->
       
   # Simple regex to replace all {key} with the data
   # passed. Only used in text/html templates
-  applyData = (s, d) ->
-    for k, v of d
-      s = s.replace new RegExp('{'+k+'}', 'g'), d[k]
-    s    
+  applyData = (string, data) ->
+    for key, value of data
+      string = string.replace new RegExp('{\s*'+key+'\s*}', 'g'), data[key]
+    string    
   
   # Sets up a function on the this object named the same
   # as the script id that can be called and passed json
   # data to in order to render the template
   @addTemplate = (name, t, type="html") ->
     # Templates can only be declared once
-    if @[name]
-      throw "Template " + name + " taken"
+    throw "Template " + name + " taken" if @[name]
     
     # The function to render this template.
     # Uses this.applyData for text/html and
@@ -91,5 +90,3 @@ window.lmt = new LocateMyTemplate()
 # Load all the templates when the page loads
 window.addEvent "domready", ->
   lmt.loadTemplates()
-  
-  
